@@ -1,6 +1,5 @@
 #pragma once
 #include <chrono>
-#include "include/fmt/format.h"
 #include "include/source_location.hpp"
 #include <string>
 #include <iomanip>
