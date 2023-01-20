@@ -1,9 +1,8 @@
 ﻿// timed.cpp: 定义应用程序的入口点。
 //
 #include "timed.h"
-#include "ram_head_file.h"
-#include "source_location_log.h"
-#include "file_exception.h"
+#include "common/utils.h"
+#include "exception/file_exception.h"
 #include <iostream>
 #include <fstream>
 #include <filesystem>
@@ -13,55 +12,12 @@
 using byte = signed char;
 using unsigned_long = unsigned long int;
 
-std::vector<std::string> getProcessStatus(const std::string& pid) {
-    std::filesystem::path p{ "/./proc/" + pid + "/status" };
-
-    std::cout << "path is " << p << "\n";
-
-    std::ifstream file_stream{ p };
-
-    if (!file_stream.good() || !file_stream)
-    {
-        file_stream.close();
-        throw FileException("Error while opening file!");
-    }
-    std::vector<std::string> result{};
-    std::string line{};
-    //file_stream >> result;
-
-    while (std::getline(file_stream, line)){
-        result.push_back(line);
-    }
-
-    file_stream.close();
-    return result;
-}
-
-std::vector<std::string> getMemoryStatus(void) {
-    std::filesystem::path p{ "/./proc/meminfo" };
-    std::ifstream file_stream{ p };
-
-    if (!file_stream.good() || !file_stream)
-    {
-        file_stream.close();
-        throw FileException("Error while opening file!");
-    }
-    std::vector<std::string> result{};
-    std::string line{};
-    //file_stream >> result;
-
-    while (std::getline(file_stream, line)) {
-        result.push_back(line);
-    }
-
-    file_stream.close();
-    return result;
-}
-
+std::vector<std::string> getProcessStatus(const std::string& pid);
+std::vector<std::string> getMemoryStatus(void);
 
 int main(int argc, char* argv[])
 {
-    ram::getRAMInfomation();
+    tools::getRAMInfomation();
     try {
         std::cout << "===================================\n";
 
@@ -98,4 +54,49 @@ int main(int argc, char* argv[])
         tools::location(e.what(), tools::select::err);
     }
     return 0;
+}
+
+std::vector<std::string> getProcessStatus(const std::string& pid) {
+    std::filesystem::path p{ "/./proc/" + pid + "/status" };
+
+    std::cout << "path is " << p << "\n";
+
+    std::ifstream file_stream{ p };
+
+    if (!file_stream.good() || !file_stream)
+    {
+        file_stream.close();
+        throw FileException("Error while opening file!");
+    }
+    std::vector<std::string> result{};
+    std::string line{};
+    //file_stream >> result;
+
+    while (std::getline(file_stream, line)) {
+        result.push_back(line);
+    }
+
+    file_stream.close();
+    return result;
+}
+
+std::vector<std::string> getMemoryStatus(void) {
+    std::filesystem::path p{ "/./proc/meminfo" };
+    std::ifstream file_stream{ p };
+
+    if (!file_stream.good() || !file_stream)
+    {
+        file_stream.close();
+        throw FileException("Error while opening file!");
+    }
+    std::vector<std::string> result{};
+    std::string line{};
+    //file_stream >> result;
+
+    while (std::getline(file_stream, line)) {
+        result.push_back(line);
+    }
+
+    file_stream.close();
+    return result;
 }

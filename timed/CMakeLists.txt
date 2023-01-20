@@ -4,7 +4,7 @@
 cmake_minimum_required (VERSION 3.8)
 
 # 将源代码添加到此项目的可执行文件。
-add_executable (timed "timed.cpp" "timed.h"    "ram_head_file.h" "source_location_log.h"  "standard_exception.h" "file_exception.h")
+add_executable (timed "timed.cpp" "timed.h"     "common/utils.h"  "exception/standard_exception.h" "exception/file_exception.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET timed PROPERTY CXX_STANDARD 20)
