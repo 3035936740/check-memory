@@ -3,11 +3,6 @@
 #include "timed.h"
 #include "common/utils.h"
 #include "exception/file_exception.h"
-#include <iostream>
-#include <fstream>
-#include <filesystem>
-#include <vector>
-#include <regex>
 
 using byte = signed char;
 using unsigned_long = unsigned long int;
@@ -17,6 +12,8 @@ std::vector<std::string> getMemoryStatus(void);
 
 int main(int argc, char* argv[])
 {
+    spdlog::info("Welcome to spdlog!!!");
+    std::cout << std::format("Hello Format{}","\t你好格式") << std::endl;
     tools::getRAMInfomation();
     try {
         std::cout << "===================================\n";

@@ -55,6 +55,7 @@ namespace tools {
 		}
 	}
 
+	// 获取日期
 	decltype(auto) time_now(system_clock::time_point t_point = system_clock::now()) {
 		time_t tt{ system_clock::to_time_t(t_point) };
 		tm* t{ localtime(&tt) };
