@@ -17,6 +17,7 @@
 
 #include "source_location.hpp"
 #include "spdlog/spdlog.h"
+#include <spdlog/sinks/daily_file_sink.h>
 #include "fmt/format.h"
 
 namespace std {
@@ -25,6 +26,18 @@ namespace std {
 	using fmt::formatter;
 	using nostd::source_location;
 }
+
+//到点(2:30)会全部记录到文件中
+static auto logger = spdlog::daily_logger_mt("daily_logger", "logs/daily.txt", 2, 30);
+
+inline void initialized(void) {
+	spdlog::info("正在初始化");
+	//设置全局日志等级
+	logger->set_level(spdlog::level::info);
+	spdlog::set_level(spdlog::level::info);
+	spdlog::info("初始化完成");
+}
+
 // TODO: 在此处引用程序需要的其他标头。
 // 
 //吸氧大法(对程序优化性能)

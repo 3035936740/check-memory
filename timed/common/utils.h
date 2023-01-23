@@ -15,7 +15,45 @@
 #include <iostream>
 
 
-namespace tools {
+inline namespace tools {
+	inline namespace log_relevant {
+		enum log_type :int {
+			info = 0,
+			debug = 1,
+			warn = 2,
+			critical = 3,
+			error = 4
+		};
+
+		void daily_log_record(
+			std::string_view record_literal,
+			log_type type = log_type::info) {
+
+			switch (type) {
+			case info:
+				spdlog::info(record_literal);
+				logger->info(record_literal);
+				break;
+			case debug:
+				spdlog::debug(record_literal);
+				logger->debug(record_literal);
+				break;
+			case warn:
+				spdlog::warn(record_literal);
+				logger->warn(record_literal);
+				break;
+			case critical:
+				spdlog::critical(record_literal);
+				logger->critical(record_literal);
+				break;
+			case error:
+				spdlog::error(record_literal);
+				logger->error(record_literal);
+				break;
+			}
+		}
+	}
+
 	namespace select {
 		enum log_type {
 			out = 0,

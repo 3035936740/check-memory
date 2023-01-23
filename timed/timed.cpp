@@ -12,8 +12,8 @@ std::vector<std::string> getMemoryStatus(void);
 
 int main(int argc, char* argv[])
 {
-    spdlog::info("Welcome to spdlog!!!");
-    std::cout << std::format("Hello Format,{}","这个是一个三方的format") << std::endl;
+    initialized();
+    log_relevant::daily_log_record(std::format("{}", "启动成功"));
     tools::getRAMInfomation();
     try {
         std::cout << "===================================\n";
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
         std::cout << "===================================\n";
     }
     catch (const std::exception& e) {
-        tools::location(e.what(), tools::select::err);
+        log_relevant::daily_log_record("发生严重错误:" + std::string(e.what()), log_relevant::log_type::error);
     }
     return 0;
 }
