@@ -13,7 +13,7 @@ std::vector<std::string> getMemoryStatus(void);
 int main(int argc, char* argv[])
 {
     spdlog::info("Welcome to spdlog!!!");
-    std::cout << std::format("Hello Format{}","\t你好格式") << std::endl;
+    std::cout << std::format("Hello Format,{}","这个是一个三方的format") << std::endl;
     tools::getRAMInfomation();
     try {
         std::cout << "===================================\n";

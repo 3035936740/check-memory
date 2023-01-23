@@ -9,12 +9,15 @@
 #include <vector>
 #include <regex>
 
-//C++20应该有的东西
-#include <fmt/format.h>
-#include <source_location.hpp>
+/*
+以下三方库的头文件的顺序不要改!
+千万不要改, 改了就不能通过编译了,
+我也不知道原理是什么,反正这个顺序不要改
+*/
 
-//三方日志库
-#include <spdlog/spdlog.h>
+#include "source_location.hpp"
+#include "spdlog/spdlog.h"
+#include "fmt/format.h"
 
 namespace std {
 	using fmt::format;
@@ -22,11 +25,8 @@ namespace std {
 	using fmt::formatter;
 	using nostd::source_location;
 }
-
 // TODO: 在此处引用程序需要的其他标头。
-
-
-
+// 
 //吸氧大法(对程序优化性能)
 //#define OXYGEN_INHALATION_METHOD
 

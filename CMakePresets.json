@@ -58,7 +58,7 @@
             }
         },
       {
-        "name": "linux-debug",
+        "name": "linux-Release",
         "displayName": "Linux Release",
         "generator": "Ninja",
         "binaryDir": "${sourceDir}/out/build/${presetName}",
