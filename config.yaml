@@ -1,3 +1,0 @@
-path:
-	execute: /./
-	proc: /./proc/meminfo

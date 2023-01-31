@@ -1,0 +1,7 @@
+{
+  "name": "timed",
+  "version": "0.0.1",
+  "dependencies": [
+    "jsoncpp"
+   ]
+}

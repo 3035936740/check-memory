@@ -1,7 +1,14 @@
 ﻿# CMakeList.txt: 顶层 CMake 项目文件，在此处执行全局配置
 # 并包含子项目。
 #
+
 cmake_minimum_required (VERSION 3.16)
+
+#vcpkg
+# 手动设置到你的vcpkg根目录
+set(VCPKG_ROOT "/./home/ubuntu/vcpkg")
+set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+CACHE STRING "Vcpkg toolchain file")
 
 # cmake版本大于3.12使用C++20的标准
 
@@ -26,18 +33,18 @@ set(LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 # 定义三方库变量及路径
 set(CXX_FORMAT_PATH ./3rdpart/fmt-master)
-set(CXX_YAML_PATH   ./3rdpart/yaml-cpp-master)
 set(SPDLOG_PATH     ./3rdpart/spdlog-1.x)
+set(NLOHMANN_JSON_PATH     ./3rdpart/json-develop)
 
 # 将三方库头文件加入项目
 include_directories(${CXX_FORMAT_PATH}/include)
-include_directories(${CXX_YAML_PATH}/include)
 include_directories(${SPDLOG_PATH}/include)
+include_directories(${NLOHMANN_JSON_PATH}/single_include)
 
 # 将三方库加入项目作为子项目
 add_subdirectory(${CXX_FORMAT_PATH})
-add_subdirectory(${CXX_YAML_PATH})
 add_subdirectory(${SPDLOG_PATH})
+add_subdirectory(${NLOHMANN_JSON_PATH})
 ##### 结束
 
 include_directories(./include)
@@ -45,5 +52,8 @@ include_directories(./include)
 # 将源代码添加到此项目的可执行文件。
 add_executable (${PROJECT_NAME} "./timed.cpp" "./timed.h" "common/utils.h"  "./exception/standard_exception.h" "./exception/file_exception.h")
 
+
 # 链接第三方库(必须在add_executable后面)
-target_link_libraries(${PROJECT_NAME} fmt yaml-cpp spdlog)
+#find_package(jsoncpp CONFIG REQUIRED)
+#JsonCpp::JsonCpp
+target_link_libraries(${PROJECT_NAME} fmt spdlog nlohmann_json)

@@ -1,17 +1,18 @@
-﻿// timed.h: 标准系统包含文件的包含文件
-// 或项目特定的包含文件。
-
 //不要乱动到其他的头文件了,不然爆炸了没你好果子吃(
-
 #pragma once
 
+//是否开启吸氧大法(对程序优化性能)
+//#define OXYGEN_INHALATION_METHOD
+
 #include <iostream>
+#include <memory>
 #include <fstream>
 #include <filesystem>
 #include <vector>
 #include <regex>
 
 #include "exception/file_exception.h"
+#include "common/properties.hpp"
 #include "common/utils.h"
 
 /*
@@ -21,15 +22,19 @@
 */
 
 #include "source_location.hpp"
-#include "yaml-cpp/yaml.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "fmt/format.h"
 
-const std::filesystem::path CONFIG_YAML_PATH {"./config.yaml"};
+
+using byte = signed char;
+using __uint64 = unsigned long int;
+
+std::vector<std::string> getProcessStatus(const std::string& pid);
+std::vector<std::string> getMemoryStatus(void);
 
 //到点(2:30)会全部记录到文件中
-static auto logger = spdlog::daily_logger_mt("daily_logger", "logs/daily.txt", 2, 30);
+static std::shared_ptr<spdlog::logger> logger {};
 
 namespace std {
 	using fmt::format;
@@ -76,59 +81,77 @@ namespace log_relevant {
 	}
 }
 
+inline namespace config_variable {
+	static std::string meminfo;
+	static std::string process_pid_file_path;
+	static std::vector<std::string> executes;
+	static std::vector<__uint64> processes_pid;
+}
+
 namespace define_value {
-	static std::string proc{ "/" };
-	void init() {
-		try {
-			std::ifstream file_stream{ CONFIG_YAML_PATH };
+	void init(void) {
+		properties prop;
+		json data = prop.getJsonData();
 
-			if (!file_stream.good() || !file_stream)
-			{
-				file_stream.close();
-				throw FileException("Error while opening file!");
-			}
-			YAML::Parser parser(file_stream);
-
-			YAML::Node doc; 
-
-			auto&& path = doc["path"];
-
-			//std::cout << std::format("path:{}", doc["path"]) << std::endl;
-
-			//proc = path["proc"].as<std::string>();
-
-			//std::cout << std::format("path路径:{}", proc) << std::endl;
-		}
-		catch (const FileException& e) {
-			log_relevant::daily_log_record("config.yaml configuration file does not exist", log_relevant::log_type::error);
-		}
-		catch (const YAML::ParserException& e) {
-			log_relevant::daily_log_record(std::format("yaml exception->detail:{}",e.what()), log_relevant::log_type::error);
-		}
-		catch (const std::exception& e) {
-			log_relevant::daily_log_record(std::format("A serious error occurred:{}", e.what()), log_relevant::log_type::error);
-		}
+		int hour  { data["log_write_time"][0] },
+			minute{ data["log_write_time"][1] };
+		logger = spdlog::daily_logger_mt("daily_logger", "logs/daily.txt", hour, minute);
+		meminfo = data["proc"];
+		process_pid_file_path = data["process_pid_file_path"];
+		executes = data["execute"];
 	}
+}
+
+// 重新获取pid,获取成功返回true
+bool reloadProcessPID(void){
+	std::ifstream file_stream{ process_pid_file_path };
+
+	if (!file_stream.good() || !file_stream)
+	{
+		file_stream.close();
+		return false;
+	}
+
+	processes_pid.clear();
+	std::string line{};
+
+	while (std::getline(file_stream, line)) {
+		processes_pid.push_back(std::stoull(line));
+	}
+
+	file_stream.close();
+	return true;
 }
 
 inline void initialized(void) {
 	spdlog::info("正在初始化");
 
-	
-	//设置全局日志等级
+	//JSON获取变量初始化
 	define_value::init();
 
-	std::cout << std::format("文件路径:{}",define_value::proc) << std::endl;
+	spdlog::info("初始化完成");
 
+	//设置全局日志等级
 	logger->set_level(spdlog::level::info);
 	spdlog::set_level(spdlog::level::info);
 	spdlog::info("初始化完成");
 }
 
+//释放资源,释放成功返回true
+bool release_resource() {
+	try {
+		logger.reset();
+	}
+	catch (const std::exception& e) {
+		spdlog::info("资源释放失败" + std::string(e.what()));
+		return false;
+	}
+
+	spdlog::info("资源释放成功");
+	return true;
+}
+
 // TODO: 在此处引用程序需要的其他标头。
-// 
-//吸氧大法(对程序优化性能)
-//#define OXYGEN_INHALATION_METHOD
 
 #ifdef OXYGEN_INHALATION_METHOD
 	#pragma GCC optimize(1)

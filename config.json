@@ -1,0 +1,10 @@
+{
+	"execute": [
+		"/./",
+		"./"
+	],
+	"process_pid_file_path": "./process.pid",
+	"proc": "/./proc/meminfo",
+	// 日志写入时间为两点半
+	"log_write_time": [2,30]
+}

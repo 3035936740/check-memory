@@ -29,13 +29,13 @@ namespace define_value {
 			path["proc"] >> proc_path;
 		}
 		catch (const YAML::ParserException& e) {
-			log_relevant::daily_log_record("找不到yaml对应参数", log_relevant::log_type::error);
+			log_relevant::daily_log_record("鎵句笉鍒皔aml瀵瑰簲鍙傛暟", log_relevant::log_type::error);
 		}
 		catch (const FileException& e) {
-			log_relevant::daily_log_record("不存在文件config.yaml", log_relevant::log_type::error);
+			log_relevant::daily_log_record("涓嶅瓨鍦ㄦ枃浠禼onfig.yaml", log_relevant::log_type::error);
 		}
 		catch (const std::exception& e) {
-			log_relevant::daily_log_record("发生严重错误:" + std::string(e.what()), log_relevant::log_type::error);
+			log_relevant::daily_log_record("鍙戠敓涓ラ噸閿欒:" + std::string(e.what()), log_relevant::log_type::error);
 		}
 	}
 }

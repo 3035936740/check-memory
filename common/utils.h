@@ -15,7 +15,7 @@
 #include <iostream>
 
 
-inline namespace tools {
+namespace tools {
 	namespace select {
 		enum log_type {
 			out = 0,
@@ -27,7 +27,21 @@ inline namespace tools {
 	using __int64 = long long int;
 	using namespace std::chrono;
 
-	// Æ¥ÅäÊı×Ö,Ã»ÓĞÆ¥Åä·µ»Ø-1
+	// è¿è¡Œshellè„šæœ¬å¹¶è·å–å­—ç¬¦ä¸²
+	const std::string exec(const char* cmd) {
+		FILE* pipe = popen(cmd, "r");
+		if (!pipe) return "ERROR";
+		char buffer[128];
+		std::string result = "";
+		while (!feof(pipe)) {
+			if (fgets(buffer, 128, pipe) != NULL)
+				result += buffer;
+		}
+		pclose(pipe);
+		return result;
+	}
+
+	// åŒ¹é…æ•°å­—,æ²¡æœ‰åŒ¹é…è¿”å›-1
 	__int64 match_numerical(const std::string& str) {
 		std::regex r{ "^(.*?)(\\d+)(.*)$" };
 
@@ -41,7 +55,7 @@ inline namespace tools {
 		}
 	}
 
-	// ÊÇ·ñº¬ÓĞÄ³×Ö·û´®ÄÚÈİ
+	// æ˜¯å¦å«æœ‰æŸå­—ç¬¦ä¸²å†…å®¹
 	bool is_match_literal(const std::string& value, const std::string& match) {
 		std::regex r{ "^(.*?)(" + match + ")(.*)$" };
 
@@ -55,7 +69,7 @@ inline namespace tools {
 		}
 	}
 
-	// »ñÈ¡ÈÕÆÚ
+	// è·å–æ—¥æœŸ
 	decltype(auto) time_now(system_clock::time_point t_point = system_clock::now()) {
 		time_t tt{ system_clock::to_time_t(t_point) };
 		tm* t{ localtime(&tt) };
@@ -88,36 +102,6 @@ inline namespace tools {
 			break;
 		default:
 			break;
-		}
-	}
-	
-	void getRAMInfomation() {
-		struct sysinfo s_info;
-		char info_buff[100];
-		if (sysinfo(&s_info) == 0)
-		{
-			sprintf(info_buff, "Total memory: %.ld Mib", s_info.totalram / 1024 / 1024);
-			printf("%s\n", info_buff);
-
-			sprintf(info_buff, "Buffer memory: %.ld Mib", s_info.bufferram / 1024 / 1024);
-			printf("%s\n", info_buff);
-
-			sprintf(info_buff, "Shared memory: %.ld Mib", s_info.sharedram / 1024 / 1024);
-			printf("%s\n", info_buff);
-
-			sprintf(info_buff, "Free memory: %.ld Mib", s_info.freeram / 1024 / 1024);
-			printf("%s\n", info_buff);
-
-			sprintf(info_buff, "Total swap memory: %.ld Mib", s_info.totalswap / 1024 / 1024);
-			printf("%s\n", info_buff);
-
-			sprintf(info_buff, "Free swap memory: %.ld Mib", s_info.freeswap / 1024 / 1024);
-			printf("%s\n", info_buff);
-
-			sprintf(info_buff, "System running time: %.ld minute", s_info.uptime / 60);
-			printf("%s\n", info_buff);
-
-			printf("\n");
 		}
 	}
 }
