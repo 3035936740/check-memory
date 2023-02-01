@@ -10,6 +10,14 @@
 #include <filesystem>
 #include <vector>
 #include <regex>
+#include <thread>
+
+#include <mutex>
+#include <condition_variable>
+
+#include <exception>
+#include <stdexcept>
+#include <algorithm>
 
 #include "exception/file_exception.h"
 #include "common/properties.hpp"
@@ -26,12 +34,19 @@
 #include "spdlog/sinks/daily_file_sink.h"
 #include "fmt/format.h"
 
+using namespace std::chrono_literals;
+using namespace std::string_literals;
 
 using byte = signed char;
 using __uint64 = unsigned long int;
 
-std::vector<std::string> getProcessStatus(const std::string& pid);
-std::vector<std::string> getMemoryStatus(void);
+void reloadProcessPIDMsg(void);
+bool reloadProcessPID(void);
+bool release_resource();
+inline namespace info {
+	std::vector<std::string> getProcessStatus(const std::string& pid);
+	std::vector<std::string> getMemoryStatus(void);
+}
 
 //到点(2:30)会全部记录到文件中
 static std::shared_ptr<spdlog::logger> logger {};
@@ -82,24 +97,65 @@ namespace log_relevant {
 }
 
 inline namespace config_variable {
-	static std::string meminfo;
-	static std::string process_pid_file_path;
-	static std::vector<std::string> executes;
-	static std::vector<__uint64> processes_pid;
-}
+	static bool end{ false };
+	static bool performance{ false };
+	static std::string write_log_time{};
+	static std::string meminfo{};
+	static std::string process_pid_file_path{};
+	static std::vector<std::string> executes{};
+	static std::vector<__uint64> processes_pid{};
+	static __uint64 max_memory_size{};
+	static __uint64 timer{};
+	static __uint64 await{};
+	static int signal{};
+	static float max_memory_usage{};
+};
 
 namespace define_value {
 	void init(void) {
 		properties prop;
 		json data = prop.getJsonData();
 
-		int hour  { data["log_write_time"][0] },
+		int hour{ data["log_write_time"][0] },
 			minute{ data["log_write_time"][1] };
-		logger = spdlog::daily_logger_mt("daily_logger", "logs/daily.txt", hour, minute);
+		
+		write_log_time = std::format("{}:{}", hour, minute);
+
+		logger = spdlog::daily_logger_mt("daily_logger", "timed_logs/daily.txt", hour, minute);
 		meminfo = data["proc"];
 		process_pid_file_path = data["process_pid_file_path"];
 		executes = data["execute"];
+		timer = data["timer"];
+		await = data["await"];
+		config_variable::signal = data["signal"];
+		performance = data["performance"];
+		max_memory_usage = data["max_memory_usage"];
+		max_memory_usage = data["max_memory_usage"];
+
+		auto memory_info{ info::getMemoryStatus() };
+		for (auto item : memory_info) {
+			if (tools::is_match_literal(item, "MemTotal")) {
+				max_memory_size = tools::match_numerical(item);
+				break;
+			}
+		}
+
+		reloadProcessPIDMsg();
 	}
+};
+
+void reloadProcessPIDMsg(void) {
+	spdlog::info("======================");
+	if (reloadProcessPID()) {
+		spdlog::info("成功获取进程PID,PID为:");
+		for (const auto& iter : processes_pid) {
+			spdlog::info(iter);
+		}
+	}
+	else {
+		log_relevant::daily_log_record(std::format("{}路径文件不存在", process_pid_file_path), log_relevant::error);
+	}
+	spdlog::info("======================");
 }
 
 // 重新获取pid,获取成功返回true
@@ -129,12 +185,57 @@ inline void initialized(void) {
 	//JSON获取变量初始化
 	define_value::init();
 
-	spdlog::info("初始化完成");
-
 	//设置全局日志等级
 	logger->set_level(spdlog::level::info);
 	spdlog::set_level(spdlog::level::info);
 	spdlog::info("初始化完成");
+}
+
+inline namespace info {
+	std::vector<std::string> getMemoryStatus(void) {
+		std::filesystem::path p{ meminfo };
+		std::ifstream file_stream{ p };
+
+		if (!file_stream.good() || !file_stream)
+		{
+			file_stream.close();
+			log_relevant::daily_log_record("无法找到文件", log_relevant::error);
+			release_resource();
+			throw FileException("error while opening file!");
+		}
+		std::vector<std::string> result{};
+		std::string line{};
+
+		while (std::getline(file_stream, line)) {
+			result.push_back(line);
+		}
+
+		file_stream.close();
+		return result;
+	};
+
+	//获取进程状态
+	std::vector<std::string> getProcessStatus(const std::string& pid) {
+		std::filesystem::path p{ "/./proc/" + pid + "/status" };
+
+		std::ifstream file_stream{ p };
+
+		std::vector<std::string> result{};
+
+		if (!file_stream.good() || !file_stream)
+		{
+			file_stream.close(); 
+			return result;
+		}
+		std::string line{};
+
+		while (std::getline(file_stream, line)) {
+			result.push_back(line);
+		}
+
+		file_stream.close();
+		return result;
+	};
 }
 
 //释放资源,释放成功返回true
@@ -143,7 +244,7 @@ bool release_resource() {
 		logger.reset();
 	}
 	catch (const std::exception& e) {
-		spdlog::info("资源释放失败" + std::string(e.what()));
+		spdlog::info("资源释放失败,detail:" + std::string(e.what()));
 		return false;
 	}
 

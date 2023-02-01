@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <linux/kernel.h>
 #include <linux/unistd.h>
+#include <signal.h>
+#include <sys/types.h>
 #include <sys/sysinfo.h>
 #include <cstring>
 #include <ios>
@@ -27,10 +29,23 @@ namespace tools {
 	using __int64 = long long int;
 	using namespace std::chrono;
 
+	bool exec_simple(const char* cmd) {
+		FILE* pipe{ popen(cmd, "r") };
+		if (!pipe) {
+			pclose(pipe);
+			return false;
+		}
+		pclose(pipe);
+		return true;
+	}
+
 	// 运行shell脚本并获取字符串
 	const std::string exec(const char* cmd) {
 		FILE* pipe = popen(cmd, "r");
-		if (!pipe) return "ERROR";
+		if (!pipe) {
+			pclose(pipe);
+			return "ERROR";
+		}
 		char buffer[128];
 		std::string result = "";
 		while (!feof(pipe)) {
