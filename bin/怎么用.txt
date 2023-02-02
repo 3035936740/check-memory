@@ -1,0 +1,2 @@
+execute里面填写启动进程的脚本
+process_pid_file_path填写 启动进程 生成的pid目录下process.pid是一个例子

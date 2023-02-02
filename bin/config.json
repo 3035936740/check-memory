@@ -5,9 +5,9 @@
 	"process_pid_file_path": "./process.pid",
 	"proc": "/./proc/meminfo",
 	"log_write_time": [ 2, 30 ],
-	"max_memory_usage": 0.7,
-	"timer": 4000,
-	"await": 500,
+	"max_memory_usage": 0.90,
+	"timer": 1000,
+	"await": 1000,
 	"performance": false,
 	"signal": 9
 }
