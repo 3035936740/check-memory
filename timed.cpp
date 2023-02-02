@@ -11,8 +11,13 @@ inline void killProcess(void) {
     for (const auto& iter : processes_pid) {
         std::string cmd{ std::format(">> kill -{} {}",config_variable::signal,iter) };
         std::cout << cmd << "\n";
-        system(cmd.c_str());
-        log_relevant::daily_log_record(std::format("PID:{} 已被杀死", iter));
+        if (system(cmd.c_str()) == -1) {
+            log_relevant::daily_log_record("指令有误",log_relevant::error);
+        }
+        else
+        {
+            log_relevant::daily_log_record(std::format("PID:{} 已被杀死", iter));
+        }
     }
 }
 

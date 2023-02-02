@@ -32,9 +32,9 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 # 定义三方库变量及路径
-set(CXX_FORMAT_PATH ./3rdpart/fmt-master)
-set(SPDLOG_PATH     ./3rdpart/spdlog-1.x)
-set(NLOHMANN_JSON_PATH     ./3rdpart/json-develop)
+set(CXX_FORMAT_PATH ./3rdparty/fmt-master)
+set(SPDLOG_PATH     ./3rdparty/spdlog-1.x)
+set(NLOHMANN_JSON_PATH     ./3rdparty/json-develop)
 
 # 将三方库头文件加入项目
 include_directories(${CXX_FORMAT_PATH}/include)
