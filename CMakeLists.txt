@@ -52,6 +52,12 @@ include_directories(./include)
 # 将源代码添加到此项目的可执行文件。
 add_executable (${PROJECT_NAME} "./timed.cpp" "./timed.h" "common/utils.h"  "./exception/standard_exception.h" "./exception/file_exception.h")
 
+# 将配置文件放置到二进制文件目录
+add_custom_command(
+  TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.json
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
 # 链接第三方库(必须在add_executable后面)
 #find_package(jsoncpp CONFIG REQUIRED)
