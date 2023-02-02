@@ -9,8 +9,8 @@ void sub();
 
 inline void killProcess(void) {
     for (const auto& iter : processes_pid) {
-        std::string cmd{ std::format(">> kill -{} {}",config_variable::signal,iter) };
-        std::cout << cmd << "\n";
+        std::string cmd{ std::format("kill -{} {}",config_variable::signal,iter) };
+        std::cout << std::format(">> {}",cmd) << "\n";
         if (system(cmd.c_str()) == -1) {
             log_relevant::daily_log_record("指令有误",log_relevant::error);
         }
