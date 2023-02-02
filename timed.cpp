@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
     float max_memory_usage{ config_variable::max_memory_usage };
     try {
         while (true) {
-            auto start = std::chrono::high_resolution_clock::now();
+            //auto start = std::chrono::high_resolution_clock::now();
 
             //PID是否存在(不存在重启)
             for (const auto& iter : processes_pid) {
@@ -121,8 +121,8 @@ int main(int argc, char* argv[])
                 std::cout << std::endl;
             }
 
-            auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> elapsed = end - start;
+            //auto end = std::chrono::high_resolution_clock::now();
+            //std::chrono::duration<double, std::milli> elapsed = end - start;
             //std::cout << "Waited " << elapsed.count() << " ms\n";
         }
     }
