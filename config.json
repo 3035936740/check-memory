@@ -1,14 +1,15 @@
 {
 	"execute": [
-		"/./",
-		"./"
+		"java -Xmx1024M -Xms10M -jar /home/ubuntu/SpringWebDemo/Bing-lkcnads/Bing_Lkcnads.jar &"
 	],
 	"process_pid_file_path": "./process.pid",
 	"proc": "/./proc/meminfo",
 	"log_write_time": [ 2, 30 ],
-	"max_memory_usage": 0.97,
-	"timer": 1000,
-	"await": 500,
+	"max_memory_usage": 0.70,
+	"timer": 4000,
+	"await": 2000,
+	"kill_await": 2000,
 	"performance": false,
-	"signal": 9
+	"signal": 15,
+	"wait_for_sleep": 1
 }

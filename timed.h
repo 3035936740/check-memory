@@ -107,6 +107,8 @@ inline namespace config_variable {
 	static __uint64 max_memory_size{};
 	static __uint64 timer{};
 	static __uint64 await{};
+	static __uint64 kill_await{};
+	static __uint64 wait_for_sleep{};
 	static int signal{};
 	static float max_memory_usage{};
 };
@@ -127,10 +129,11 @@ namespace define_value {
 		executes = data["execute"];
 		timer = data["timer"];
 		await = data["await"];
+		kill_await = data["kill_await"];
 		config_variable::signal = data["signal"];
 		performance = data["performance"];
 		max_memory_usage = data["max_memory_usage"];
-		max_memory_usage = data["max_memory_usage"];
+		wait_for_sleep = data["wait_for_sleep"];
 
 		auto memory_info{ info::getMemoryStatus() };
 		for (auto item : memory_info) {
