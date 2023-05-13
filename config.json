@@ -1,6 +1,8 @@
 {
 	"execute": [
-		"java -Xmx1024M -Xms10M -jar /home/ubuntu/SpringWebDemo/Bing-lkcnads/Bing_Lkcnads.jar &"
+		"java -Xmx1024M -Xms10M -jar ../main.jar &",
+		"python ../main.py",
+		"../main"
 	],
 	"process_pid_file_path": "./process.pid",
 	"proc": "/./proc/meminfo",
